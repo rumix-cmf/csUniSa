@@ -6,7 +6,7 @@ tspan   = [0 1];
 y0      = 1;
 
 % Soluzione esatta
-sol = @(t) (1+t^2)^2;
+sol = @(t) (1+t.^2).^2;
 
 % Metodo 1
 % csUniSa.odes.eulerExplicit
@@ -56,95 +56,179 @@ end
 
 %% Metodo 1. Tabella e grafico
 
-% Inizializza tabella
-tab = zeros( 11, 4 );
-tab(:,1) = (0:0.1:1)';
+% Inizializza tabelle
+solutionTab         = zeros( 11, 5 );
+solutionTab(:,1)    = (0:0.1:1)';
+errorTab            = zeros( 11, 4);
+errorTab(:,1)       = (0:0.1:1)';
 
-% Inizializza grafico
-fplot( sol, [0 1], 'k' );
+% Inizializza grafici
+figure( 1 )
+fplot( sol, [0 1], 'k' )
+hold on
+figure( 2 )
 hold on
 
 % Soluzioni con passi diversi
 h = [0.1 0.05 0.025];
 for i = 1:length(h)
-    [t, y] = csUniSa.odes.eulerExplicit( odefun, tspan, y0, h(i));
+
+    % Calcola soluzioni ed errori, aggiorna grafici
+    [t, y] = csUniSa.odes.eulerExplicit( odefun, tspan, y0, h(i) );
+    exactValues = sol( t );
+    err = abs( y - exactValues );
+    figure( 1 )
+    plot( t, y, '*' )
+    figure( 2 )
+    plot( t, err, '-*' )
+
+    % Aggiorna tabelle
     for j = 1:11
-        tab(j,i+1) = y((2^(i-1))*(j-1) +1);
+        solutionTab(j,2) = exactValues((2^(i-1))*(j-1) +1);
+        solutionTab(j,i+2) = y((2^(i-1))*(j-1) +1);
+        errorTab(j,i+1) = err((2^(i-1))*(j-1) +1);
     end
-    plot(t, y, '*')
 end
-legend( 'sol', 'h=0.1', 'h=0.05', 'h=0.025' )
+figure( 1 )
+legend( 'sol', 'h 0.1', 'h 0.05', 'h 0.025', 'Location', 'best' )
 title( 'Metodo 1' )
+hold off
+figure( 2 )
+legend( 'h 0.1', 'h 0.05', 'h 0.025', 'Location', 'best' )
+title( 'Metodo 1 - Errore' )
 hold off
 
 %% Metodo 2, a=0. Tabella e grafico
 
-% Inizializza tabella
-tab = zeros( 11, 4 );
-tab(:,1) = (0:0.1:1)';
+% Inizializza tabelle
+solutionTab         = zeros( 11, 5 );
+solutionTab(:,1)    = (0:0.1:1)';
+errorTab            = zeros( 11, 4);
+errorTab(:,1)       = (0:0.1:1)';
 
-% Inizializza grafico
+% Inizializza grafici
+figure( 1 )
 fplot( sol, [0 1], 'k' );
+hold on
+figure( 2 )
 hold on
 
 % Soluzioni con passi diversi
 h = [0.1 0.05 0.025];
 for i = 1:length(h)
+
+    % Calcola soluzioni ed errori, aggiorna grafici
     ivs = [y0 sol(h(i))];
-    [t, y] = metodo2( odefun, tspan, ivs, h(i), 0);
+    [t, y] = metodo2( odefun, tspan, ivs, h(i), 0 );
+    exactValues = sol( t );
+    err = abs( y - exactValues );
+    figure( 1 )
+    plot( t, y, '*' );
+    figure( 2 )
+    plot( t, err, '-*' );
+
+    % Aggiorna tabelle
     for j = 1:11
-        tab(j,i+1) = y((2^(i-1))*(j-1) +1);
+        solutionTab(j,2) = exactValues((2^(i-1))*(j-1) +1);
+        solutionTab(j,i+2) = y((2^(i-1))*(j-1) +1);
+        errorTab(j,i+1) = err((2^(i-1))*(j-1) +1);
     end
-    plot(t, y, '*')
 end
-legend( 'sol', 'h=0.1', 'h=0.05', 'h=0.025' )
+figure( 1 )
+legend( 'sol', 'h 0.1', 'h 0.05', 'h 0.025', 'Location', 'best' )
 title( 'Metodo 2, a=0' )
+hold off
+figure( 2 )
+legend( 'h 0.1', 'h 0.05', 'h 0.025', 'Location', 'best' )
+title( 'Metodo 2, a=0 - Errore' )
 hold off
 
 %% Metodo 2, a=-5. Tabella e grafico
 
-% Inizializza tabella
-tab = zeros( 11, 4 );
-tab(:,1) = (0:0.1:1)';
+% Inizializza tabelle
+solutionTab         = zeros( 11, 5 );
+solutionTab(:,1)    = (0:0.1:1)';
+errorTab            = zeros( 11, 4);
+errorTab(:,1)       = (0:0.1:1)';
 
-% Inizializza grafico
+% Inizializza grafici
+figure( 1 )
 fplot( sol, [0 1], 'k' );
+hold on
+figure( 2 )
 hold on
 
 % Soluzioni con passi diversi
 h = [0.1 0.05 0.025];
 for i = 1:length(h)
+
+    % Calcola soluzioni ed errori, aggiorna grafici
     ivs = [y0 sol(h(i))];
-    [t, y] = metodo2( odefun, tspan, ivs, h(i), -5);
+    [t, y] = metodo2( odefun, tspan, ivs, h(i), -5 );
+    exactValues = sol( t );
+    err = abs( y - exactValues );
+    figure( 1 )
+    plot( t, y, '*' );
+    figure( 2 )
+    plot( t, err, '-*' );
+
+    % Aggiorna tabelle
     for j = 1:11
-        tab(j,i+1) = y((2^(i-1))*(j-1) +1);
+        solutionTab(j,2) = exactValues((2^(i-1))*(j-1) +1);
+        solutionTab(j,i+2) = y((2^(i-1))*(j-1) +1);
+        errorTab(j,i+1) = err((2^(i-1))*(j-1) +1);
     end
-    plot(t, y, '*')
 end
-legend( 'sol', 'h=0.1', 'h=0.05', 'h=0.025' )
+figure( 1 )
+legend( 'sol', 'h 0.1', 'h 0.05', 'h 0.025', 'Location', 'best' )
 title( 'Metodo 2, a=-5' )
+hold off
+figure( 2 )
+legend( 'h 0.1', 'h 0.05', 'h 0.025', 'Location', 'best' )
+title( 'Metodo 2, a=-5 - Errore' )
 hold off
 
 %% Metodo 3. Tabella e grafico
 
-% Inizializza tabella
-tab = zeros( 11, 4 );
-tab(:,1) = (0:0.1:1)';
+% Inizializza tabelle
+solutionTab         = zeros( 11, 5 );
+solutionTab(:,1)    = (0:0.1:1)';
+errorTab            = zeros( 11, 4);
+errorTab(:,1)       = (0:0.1:1)';
 
-% Inizializza grafico
+% Inizializza grafici
+figure( 1 )
 fplot( sol, [0 1], 'k' );
+hold on
+figure( 2 )
 hold on
 
 % Soluzioni con passi diversi
 h = [0.1 0.05 0.025];
 for i = 1:length(h)
+
+    % Calcola soluzioni ed errori, aggiorna grafici
     ivs = [y0 sol(h(i))];
     [t, y] = metodo3( odefun, tspan, ivs, h(i) );
+    exactValues = sol( t );
+    err = abs( y - exactValues );
+    figure( 1 )
+    plot( t, y, '*' );
+    figure( 2 )
+    plot( t, err, '-*' );
+
+    % Aggiorna tabelle
     for j = 1:11
-        tab(j,i+1) = y((2^(i-1))*(j-1) +1);
+        solutionTab(j,2) = exactValues((2^(i-1))*(j-1) +1);
+        solutionTab(j,i+2) = y((2^(i-1))*(j-1) +1);
+        errorTab(j,i+1) = err((2^(i-1))*(j-1) +1);
     end
-    plot(t, y, '*')
 end
-legend( 'sol', 'h=0.1', 'h=0.05', 'h=0.025' )
+figure( 1 )
+legend( 'sol', 'h 0.1', 'h 0.05', 'h 0.025', 'Location', 'best' )
 title( 'Metodo 3' )
+hold off
+figure( 2 )
+legend( 'h 0.1', 'h 0.05', 'h 0.025', 'Location', 'best' )
+title( 'Metodo 3 - Errore' )
 hold off
