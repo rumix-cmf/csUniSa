@@ -9,7 +9,7 @@ y0      = 1;
 sol = @(t) (1+t.^2).^2;
 
 % Metodo 1
-% csUniSa.odes.eulerExplicit
+% csUniSa.odes.euler
 
 % Metodo 2
 function [t, y] = metodo2( odefun, tspan, ivs, h, a )
@@ -74,7 +74,7 @@ h = [0.1 0.05 0.025];
 for i = 1:length(h)
 
     % Calcola soluzioni ed errori, aggiorna grafici
-    [t, y] = csUniSa.odes.eulerExplicit( odefun, tspan, y0, h(i) );
+    [t, y] = csUniSa.odes.euler( odefun, tspan, y0, h(i) );
     exactValues = sol( t );
     err = abs( y - exactValues );
     figure( 1 )

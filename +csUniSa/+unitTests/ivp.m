@@ -9,65 +9,69 @@ classdef ivp
   end
 
   methods
-    function obj = ivp( odefun, tspan, y0, problem, parameters )
+    function obj = ivp( problem, odefun, tspan, y0, varargin )
       %IVP Contruct an instance of this class.
       % Can also reference any implemented problem, as long as any
-      % required parameter is also passed.
+      % required parameter is also passed. In particular, you can get a
+      % default instance of a problem by passing just the name.
       %
       % Syntax
-      %   obj = ivp( tspan, y0, odefun )
-      %   obj = ivp( tspan, y0, problem, parameters )
+      %   obj = ivp( [], odefun, tspan, y0 )
+      %   obj = ivp( problem )
+      %   obj = ivp( problem, [], tspan, y0, varargin )
       %
       % Input Arguments
+      %   problem - name of an implemented problem, see examples
+      %     string
       %   odefun - Functions to solve
       %     function handle
       %   tspan - Interval of integration
       %     vector
       %   y0 - Initial value
       %     column vector
-      %   problem - name of an implemented problem, see examples
-      %     string
-      %   parameters - Required parameters for the chosen method, bundled
-      %   in a vector
+      %   varargin - Required parameters for the chosen method
       %
       % Examples
       %   
-      %   obj = ivp ( tspan, y0, 'brusselator', [A B] )
+      %   obj = ivp( 'brusselator', [], tspan, y0, A, B )
+      %   obj = ivp( 'brusselator' )
 
-      obj.tspan = tspan;
-      obj.y0 = y0;
-
-      if nargin == 4
-        obj.odefun = odefun;
-      end
-
-      switch problem
-        case 'brusselator'
-          % Parameters: A, B
-          A = parameters(1);
-          B = parameters(2);
-          obj.odefun = csUniSa.unitTests.brusselator( A, B );
-
-        otherwise
-          error("There is no such problem")
+      if nargin == 1 % default instance of implemented problem
+        switch problem
+          case 'brusselator'
+            obj.tspan = [0 20];
+            obj.y0 = [1.5 3]';
+            obj.odefun = csUniSa.unitTests.brusselator( 1, 3 );
+        end
+      else % generic instance of implemented ivp
+        obj.tspan = tspan;
+        obj.y0 = y0;
+        switch problem
+          case 'brusselator'
+            A = varargin{1};
+            B = varargin{2};
+            obj.odefun = csUniSa.unitTests.brusselator( A, B );
+  
+          otherwise % generic ivp
+            obj.odefun = odefun;
+        end
       end
     end
 
-    function [t, y] = solve( obj, command, parameters )
+    function [t, y] = solve( obj, command, varargin )
       %SOLVE Solve the problem using any suitable command.
       %
       % Syntax
-      %   obj.solve( command, parameters )
+      %   obj.solve( command, varargin )
       %
       %   Default command is ode23. Required parameters of custom methods
       %   must be provided.
       %
-      %   Examples
-      %     obj.solve( eulerE, h )
-      %
-      %   Inputs
-      %     parameters - Required parameters for the chosen method, bundled
-      %     in a vector
+      % Examples
+      %   obj.solve
+      %   obj.solve( ode45 )
+      %   obj.solve( euler, h )
+      %   obj.solve( midpoint, h, start)
 
       if nargin == 1
         command = 'ode23';
@@ -81,10 +85,16 @@ classdef ivp
 
       % Custom methods in this library
       switch command
-        case 'eulerE'
-          h = parameters(1);
-          commandStr = '[t y] = csUniSa.odes.eulerExplicit( obj.odefun, obj.tspan, obj.y0, h );';
-          command = sprintf( 'Euler (explicit), h=%0.6f', h );
+        case 'euler'
+          h = varargin{1};
+          commandStr = '[t y] = csUniSa.odes.euler( obj.odefun, obj.tspan, obj.y0, h );';
+          command = sprintf( 'Euler, h=%0.6f', h );
+
+        case 'midpoint'
+          h = varargin{1};
+          y1 = varargin{2};
+          commandStr = '[t y] = csUnisa.odes.midpoint( obj.odefun, obj.tspan, obj,y0, h, y1 );';
+          command = sprintf( 'Midpoint, h=%0.6f', h);
       end
 
       eval( commandStr );

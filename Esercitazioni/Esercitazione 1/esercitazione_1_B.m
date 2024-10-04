@@ -9,7 +9,7 @@ pest = cd;
 tab(:,1) = h;
 
 % Metodo 1
-% csUniSa.odes.eulerExplicit
+% csUniSa.odes.euler
 
 % Metodo 2
 function [t, y] = metodo2( odefun, tspan, ivs, h, a )
@@ -56,7 +56,7 @@ end
 
 %% Metodo 1
 for i = 1:length( h )
-    [t y] = ivp.solve( 'eulerE', h(i) );
+    [t y] = ivp.solve( 'euler', h(i) );
     cd(i) = -log10( norm( y(end,:)'-sol ) );
 end
 
