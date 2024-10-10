@@ -71,7 +71,7 @@ classdef ivp
       %   obj.solve
       %   obj.solve( ode45 )
       %   obj.solve( euler, h )
-      %   obj.solve( midpoint, h, start)
+      %   obj.solve( midpoint, h, y1)
 
       if nargin == 1
         command = 'ode23';
@@ -93,7 +93,7 @@ classdef ivp
         case 'midpoint'
           h = varargin{1};
           y1 = varargin{2};
-          commandStr = '[t y] = csUnisa.odes.midpoint( obj.odefun, obj.tspan, obj,y0, h, y1 );';
+          commandStr = '[t y] = csUniSa.odes.midpoint( obj.odefun, obj.tspan, obj.y0, h, y1 );';
           command = sprintf( 'Midpoint, h=%0.6f', h);
       end
 
